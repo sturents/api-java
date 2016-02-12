@@ -17,13 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
 
 public class SendHouses {
-	public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-		String json = readFile("data.json");
-
-		String landlord_id = args[0];
-		String api_key = args[1];
-
-		System.out.println(landlord_id);
+	public static String run(String landlord_id, String api_key, String json) throws IOException, NoSuchAlgorithmException {
 
 		String auth_string = json + api_key;
 		String auth = md5(auth_string);
@@ -31,7 +25,7 @@ public class SendHouses {
 
         String response = post(json, landlord_id, auth);
         
-        System.out.println(response);
+        return response;
     }
 
     public static String post(String json, String landlord_id, String auth) throws IOException {
@@ -47,12 +41,6 @@ public class SendHouses {
 
         return result;
     }
-
-	static String readFile(String path) throws IOException  {
-		byte[] encoded = Files.readAllBytes(Paths.get(path));
-		
-		return new String(encoded, "UTF-8");
-	}
 
 	static String md5(String plaintext) throws NoSuchAlgorithmException {
 		MessageDigest m = MessageDigest.getInstance("MD5");

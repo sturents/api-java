@@ -24,7 +24,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.sturents.api.SendHouses</mainClass>
+                            <mainClass>org.sturents.api.Cli</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
