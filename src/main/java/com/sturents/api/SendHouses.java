@@ -1,3 +1,5 @@
+package com.sturents.api;
+
 import java.net.URLConnection;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,13 +17,14 @@ public class SendHouses {
 	public static void main(String[] args) throws IOException {
 		String json = readFile("data.json");
 
-		String landlord_id = args[1];
+		String landlord_id = args[0];
+		String auth = args[1];
 
 		System.out.println(landlord_id);
 
-        // String response = post(json, landlord_id, auth);
+        String response = post(json, landlord_id, auth);
         
-        // System.out.println(response);
+        System.out.println(response);
     }
 
     public static String post(String json, String landlord_id, String auth) throws IOException {
