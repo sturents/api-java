@@ -1,62 +1,89 @@
 package com.sturents.api;
 
-import java.net.URLConnection;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpEntity;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.math.BigInteger;
 
 public class SendHouses {
-	public static String run(String landlord_id, String api_key, String json) throws IOException, NoSuchAlgorithmException {
 
-		String auth_string = json + api_key;
-		String auth = md5(auth_string);
-		System.out.println("Auth is " + auth);
+    private final static String STU_RENTS_URL = "https://sturents.com/api/houses?";
+    private int landlord_id;
+    private String api_key;
+    private String json;
 
-        String response = post(json, landlord_id, auth);
-        
-        return response;
+    /**
+     * Constructor
+     * 
+     * @throws IOException
+     * @throws UnsupportedEncodingException
+     */
+    public SendHouses(String[] args) throws UnsupportedEncodingException, IOException {
+	landlord_id = Integer.parseInt(args[0]);
+	System.out.println("landlord_id" + landlord_id);
+
+	api_key = args[1];
+	System.out.println("api_key: " + api_key);
+
+	json = new String(Files.readAllBytes(Paths.get(args[2])), "UTF-8");
+	System.out.println("data.json read.");
     }
 
-    public static String post(String json, String landlord_id, String auth) throws IOException {
-    	HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost("https://sturents.com/api/houses?landlord="+landlord_id+"&auth="+auth);
-        
-        HttpEntity entity = new ByteArrayEntity(json.getBytes("UTF-8"));
-        
-        post.setEntity(entity);
+    /**
+     * do the thing
+     * 
+     * @return response from http request to stu rents
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     */
+    public String run() throws IOException, NoSuchAlgorithmException {
+	String auth_string = json + api_key;
+	String auth = DigestUtils.md5Hex(auth_string);
+	System.out.println("Auth is " + auth);
 
-        HttpResponse response = client.execute(post);
-        String result = EntityUtils.toString(response.getEntity());
+	String response = post(auth);
 
-        return result;
+	return response;
     }
 
-	static String md5(String plaintext) throws NoSuchAlgorithmException {
-		MessageDigest m = MessageDigest.getInstance("MD5");
-		
-		m.reset();
-		m.update(plaintext.getBytes());
-		byte[] digest = m.digest();
-		
-		BigInteger bigInt = new BigInteger(1,digest);
-		String hashtext = bigInt.toString(16);
-		
-		// Now we need to zero pad it if you actually want the full 32 chars.
-		while(hashtext.length() < 32 ){
-			hashtext = "0"+hashtext;
-		}
+    private String post(String auth) throws IOException {
+	HttpClient client = new DefaultHttpClient();
 
-		return hashtext;
-	}
+	HttpPost post = new HttpPost(buildHttpPostString(auth));
+
+	HttpEntity entity = new ByteArrayEntity(json.getBytes("UTF-8"));
+
+	post.setEntity(entity);
+
+	HttpResponse response = client.execute(post);
+	String result = EntityUtils.toString(response.getEntity());
+
+	return result;
+    }
+
+    /**
+     * should use StringBuilder not String concatenation
+     * 
+     * @param auth
+     * @return
+     */
+    private String buildHttpPostString(String auth) {
+	StringBuilder sb = new StringBuilder();
+	sb.append(STU_RENTS_URL);
+	sb.append("?landlord=");
+	sb.append(landlord_id);
+	sb.append("&auth=");
+	sb.append(auth);
+	return sb.toString();
+    }
 }

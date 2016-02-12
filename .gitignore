@@ -1,2 +1,5 @@
 target/
 data.json
+/bin/
+/.project
+/.classpath
