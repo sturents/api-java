@@ -15,7 +15,7 @@ import org.apache.http.util.EntityUtils;
 
 public class SendHouses {
 
-    private final static String STURENTS_URL = "https://sturents.com/api/houses?";
+    private final static String STURENTS_URL = "https://sturents.com/api/houses";
     private int landlord_id;
     private String api_key;
     private String json;
