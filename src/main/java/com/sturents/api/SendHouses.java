@@ -30,7 +30,7 @@ public class SendHouses {
 
     public static String post(String json, String landlord_id, String auth) throws IOException {
     	HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost("http://localhost/test.sturents.com/api/houses?landlord="+landlord_id+"&auth="+auth);
+        HttpPost post = new HttpPost("https://sturents.com/api/houses?landlord="+landlord_id+"&auth="+auth);
         
         HttpEntity entity = new ByteArrayEntity(json.getBytes("UTF-8"));
         
